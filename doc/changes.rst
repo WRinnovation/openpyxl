@@ -1,3 +1,7 @@
+3.1.0 (unreleased)
+==================
+
+
 3.0.3 (unreleased)
 ==================
 
@@ -22,6 +26,7 @@ Pull Requests
 * `PR359 <https://bitbucket.org/openpyxl/openpyxl/pull-requests/359/>`_ Improvements to the documentation
 
 
+>>>>>>> theirs
 3.0.1 (2019-11-14)
 ==================
 
