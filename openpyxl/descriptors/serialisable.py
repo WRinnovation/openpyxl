@@ -71,34 +71,38 @@ class Serialisable(_Serialiasable):
             attrib["attr_text"] = node.text
 
         for el in node:
-            tag = localname(el)
-            if tag in KEYWORDS:
-                tag = "_" + tag
-            desc = getattr(cls, tag, None)
-            if desc is None or isinstance(desc, property):
-                continue
+            # try-except to skip drawings in excel file 
+            try:
+                tag = localname(el)
+                if tag in KEYWORDS:
+                    tag = "_" + tag
+                desc = getattr(cls, tag, None)
+                if desc is None or isinstance(desc, property):
+                    continue
 
-            if hasattr(desc, 'from_tree'):
-                #descriptor manages conversion
-                obj = desc.from_tree(el)
-            else:
-                if hasattr(desc.expected_type, "from_tree"):
-                    #complex type
-                    obj = desc.expected_type.from_tree(el)
+                if hasattr(desc, 'from_tree'):
+                    #descriptor manages conversion
+                    obj = desc.from_tree(el)
                 else:
-                    #primitive
-                    obj = el.text
+                    if hasattr(desc.expected_type, "from_tree"):
+                        #complex type
+                        obj = desc.expected_type.from_tree(el)
+                    else:
+                        #primitive
+                        obj = el.text
 
-            if isinstance(desc, NestedSequence):
-                attrib[tag] = obj
-            elif isinstance(desc, Sequence):
-                attrib.setdefault(tag, [])
-                attrib[tag].append(obj)
-            elif isinstance(desc, MultiSequencePart):
-                attrib.setdefault(desc.store, [])
-                attrib[desc.store].append(obj)
-            else:
-                attrib[tag] = obj
+                if isinstance(desc, NestedSequence):
+                    attrib[tag] = obj
+                elif isinstance(desc, Sequence):
+                    attrib.setdefault(tag, [])
+                    attrib[tag].append(obj)
+                elif isinstance(desc, MultiSequencePart):
+                    attrib.setdefault(desc.store, [])
+                    attrib[desc.store].append(obj)
+                else:
+                    attrib[tag] = obj
+            except:
+                pass
 
         return cls(**attrib)
 
